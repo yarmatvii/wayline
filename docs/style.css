@@ -260,9 +260,12 @@ dialog::backdrop { background: #090a10c7; }
 }
 .ticket-viewer[open] {
   display: block;
+  place-items: normal;
   overflow: auto;
   overscroll-behavior: contain;
+  scrollbar-width: none;
 }
+.ticket-viewer::-webkit-scrollbar { display: none; }
 .ticket-view-header {
   position: sticky;
   top: 0;
@@ -332,6 +335,7 @@ dialog::backdrop { background: #090a10c7; }
 .ticket-sample-caption strong { display: block; font-size: calc(50 * var(--ticket-unit)); }
 .ticket-sample-caption span { font-size: calc(32 * var(--ticket-unit)); }
 .ticket-actions {
+  width: 100%;
   padding: calc(69 * var(--ticket-unit)) calc(63 * var(--ticket-unit)) max(calc(70 * var(--ticket-unit)), env(safe-area-inset-bottom));
   background: #eff3f6;
 }
