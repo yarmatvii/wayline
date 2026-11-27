@@ -35,6 +35,7 @@ const videoError = byId('video-error');
 const videoView = byId('video-view');
 const video = byId('local-video');
 const ticket = byId('open-video');
+const ticketEntry = byId('journeys-ticket');
 let videoUrl;
 let videoFailed = false;
 
@@ -60,7 +61,7 @@ videoInput.addEventListener('change', () => {
   if (previousUrl) URL.revokeObjectURL(previousUrl);
   feedback(videoError);
   byId('journeys-empty').hidden = true;
-  ticket.hidden = false;
+  ticketEntry.hidden = false;
   videoDialog.close();
   ticket.focus();
 });
@@ -84,6 +85,7 @@ video.addEventListener('error', () => {
 
 ticket.addEventListener('click', () => {
   videoView.showModal();
+  videoView.scrollTop = 0;
   playVideo();
 });
 

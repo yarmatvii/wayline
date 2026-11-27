@@ -39,9 +39,10 @@
             <span id="refresh-status" class="sr-only" role="status"></span>
           </div>
 
-          <button class="ticket-card" id="open-video" type="button" hidden>
-            <span>Deutschland Ticket</span>
-          </button>
+          <div class="reference ticket-entry" id="journeys-ticket" hidden>
+            <img class="reference-image" src="./ticket-list.png" width="1080" height="786" alt="BahnCards, season tickets and subscriptions. Deutschland-Ticket DTV, second class.">
+            <button class="reference-hit ticket-card" id="open-video" type="button" aria-label="Open Deutschland-Ticket DTV, second class"></button>
+          </div>
 
           <img class="reference-image" src="./journeys-previous.png" width="1170" height="520" alt="Previous trips. Previous and cancelled journeys, BahnCards, season tickets and subscriptions.">
         </div>
@@ -89,12 +90,44 @@
       <button type="button" data-page="profile" aria-controls="profile"><span class="sr-only">Profile</span></button>
     </nav>
 
-    <dialog class="fullscreen-viewer" id="video-view" aria-label="Deutschland Ticket">
-      <video id="local-video" playsinline muted loop disablepictureinpicture disableremoteplayback aria-label="Selected local video"></video>
-      <button class="back-button" id="back-to-journeys" type="button" aria-label="Back to Journeys">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-8 8 8 8"/></svg>
-      </button>
-      <p id="video-error" class="feedback video-error" role="alert" hidden></p>
+    <dialog class="fullscreen-viewer ticket-viewer" id="video-view" aria-labelledby="ticket-view-title">
+      <header class="reference ticket-view-header">
+        <img class="reference-image" src="./ticket-header.png" width="1080" height="144" alt="">
+        <h2 class="sr-only" id="ticket-view-title">Subscription</h2>
+        <button class="reference-hit ticket-back" id="back-to-journeys" type="button" aria-label="Back to Journeys"></button>
+      </header>
+      <div class="ticket-media">
+        <video id="local-video" playsinline muted loop disablepictureinpicture disableremoteplayback aria-label="Selected local video"></video>
+        <p id="video-error" class="feedback video-error" role="alert" hidden></p>
+      </div>
+      <section class="ticket-details" lang="de" aria-labelledby="ticket-conditions-title">
+        <div class="sr-only">
+          <h3 id="ticket-conditions-title">Konditionen</h3>
+          <p>Gilt im angegebenen Geltungszeitraum bundesweit für beliebig viele Fahrten in allen Nahverkehrszügen, Verkehrsverbünden, Landestarifen und teilnehmenden Verkehrsunternehmen.</p>
+          <p>Nur gültig mit amtlichem Lichtbildausweis. Dieser ist bei der Kontrolle vorzuzeigen. Es gelten die Tarifbedingungen des Deutschlandtarifs.</p>
+          <p>Eine Fahrkarte entspricht grundsätzlich einem Beförderungsvertrag, mehrere Fahrkarten mehreren Beförderungsverträgen. Vertraglicher Beförderer können dabei ein oder mehrere Verkehrsunternehmen sein. Für die Eisenbahnfahrt handelt es sich bei dieser Fahrkarte um eine Durchgangsfahrkarte gemäß der Fahrgastrechte-Verordnung (EU) 2021/782 für den Eisenbahnverkehr. Für eine Fahrkarte, die neben der Eisenbahnfahrt noch die Fahrt mit einem anderen Verkehrsträger umfasst (z.B. Schiff zu den Nordseeinseln; ÖPNV) gilt: Die Fahrkarte dokumentiert dann je einen gesonderten Beförderungsvertrag pro Richtung und pro Verkehrsträger. Die Haftung für fahrgastrechtliche Ansprüche gilt dann auch nur für den jeweiligen Beförderungsvertrag.</p>
+          <p>Monatlich kündbar. Stornierung ausgeschlossen.</p>
+        </div>
+        <img class="reference-image" src="./ticket-conditions.png" width="1080" height="1138" alt="">
+        <div class="ticket-document-details">
+          <p class="ticket-code">Ticketcode: —</p>
+          <div class="ticket-sample">
+            <div class="ticket-pattern" aria-hidden="true">
+              <span>000000000000</span>
+              <span>DEUTSCHLAND-TICKET MUSTER FAHRKARTE 2. KLASSE MUSTER</span>
+              <span>MUSTER DEUTSCHLAND-TICKET DEMO MUSTER DEMO</span>
+              <span>000000000000</span>
+            </div>
+            <div class="ticket-sample-caption">
+              <strong>MUSTER</strong>
+              <span>Nicht zur Fahrt gültig</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="ticket-actions">
+        <button type="button" disabled>More actions</button>
+      </footer>
     </dialog>
 
     <dialog class="fullscreen-viewer" id="photo-viewer" aria-labelledby="photo-viewer-label">

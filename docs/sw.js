@@ -2,7 +2,7 @@
 
 const scope = self.registration.scope;
 const cachePrefix = 'wayline:' + scope + ':';
-const build = '5';
+const build = '6';
 const cacheName = cachePrefix + build;
 const appFiles = [
   './index.html',
@@ -14,6 +14,9 @@ const appFiles = [
   './journeys-header.png',
   './journeys-empty.png',
   './journeys-previous.png',
+  './ticket-list.png',
+  './ticket-header.png',
+  './ticket-conditions.png',
   './profile-reference.png',
   './dock-booking.png',
   './dock-journeys.png',
