@@ -2,7 +2,7 @@
 
 const scope = self.registration.scope;
 const cachePrefix = 'wayline:' + scope + ':';
-const build = '4';
+const build = '5';
 const cacheName = cachePrefix + build;
 const appFiles = [
   './index.html',

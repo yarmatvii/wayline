@@ -46,31 +46,36 @@
           <img class="reference-image" src="./journeys-previous.png" width="1170" height="520" alt="Previous trips. Previous and cancelled journeys, BahnCards, season tickets and subscriptions.">
         </div>
 
-        <div id="video-view" hidden>
-          <header class="detail-heading">
-            <button class="back-button" id="back-to-journeys" type="button" aria-label="Back to Journeys">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-8 8 8 8"/></svg>
-            </button>
-            <h2>Deutschland Ticket</h2>
-          </header>
-          <div class="video-stage">
-            <video id="local-video" playsinline muted loop disablepictureinpicture disableremoteplayback aria-label="Selected local video"></video>
-            <p id="video-error" class="feedback video-error" role="alert" hidden></p>
-          </div>
-        </div>
       </section>
 
       <section id="profile" aria-labelledby="profile-heading" hidden>
         <h1 class="sr-only" id="profile-heading">Profile</h1>
         <div class="reference">
-          <img class="reference-image" src="./profile-reference.png" width="1170" height="2152" alt="Personal details. Login and security. Means of payment, Book faster. Subscriptions and credits.">
-          <button class="reference-hit personal-card" id="open-profile" type="button" aria-label="Open personal details">
+          <img class="reference-image" src="./profile-reference.png" width="1170" height="1927" alt="Personal details. Login and security. Means of payment, Book faster. Subscriptions and credits.">
+          <button class="reference-hit personal-more" id="edit-profile" type="button" aria-label="More personal details"></button>
+          <button class="reference-hit personal-card" id="open-profile" type="button" aria-describedby="photo-card-action" aria-disabled="true">
             <strong id="display-name">Mr Alex Morgan</strong>
             <span>Customer ID 0000 0000 0000</span>
           </button>
+          <span class="sr-only" id="photo-card-action">Opens the saved profile photo</span>
           <p class="demo-email">passenger@example.com</p>
         </div>
-        <div class="profile-tail" aria-hidden="true"></div>
+        <div class="subscription-row">
+          <article class="subscription-card" aria-labelledby="subscription-heading">
+            <svg viewBox="0 0 280 220" aria-hidden="true">
+              <path d="M34 23h183a24 24 0 0 1 24 24v65a8 8 0 0 0 0 16v48a23 23 0 0 1-23 23H33a24 24 0 0 1-24-24v-47a8 8 0 0 0 0-16V47a24 24 0 0 1 25-24Z"/>
+              <path d="M41 59h72m-72 24h96m-96 68h24m17 0h90m-131 22h72" />
+              <path class="subscription-perforation" d="M32 116h186" />
+              <path d="M187 53h10v10h-10zm21 0h10v10h-10zm-21 21h10v10h-10zm22 0h8v8m-1 0h5" />
+              <circle class="subscription-badge" cx="230" cy="171" r="43" />
+              <path class="subscription-accent" d="M221 157h-5a10 10 0 0 0 0 20h8m13-20h6a10 10 0 1 1 0 20h-8m-14-10h18"/>
+            </svg>
+            <div>
+              <h2 id="subscription-heading">Subscriptions</h2>
+              <p>Manage your subscriptions<br>and their details.</p>
+            </div>
+          </article>
+        </div>
       </section>
     </main>
 
@@ -83,6 +88,19 @@
       <button type="button" data-page="journeys" aria-controls="journeys"><span class="sr-only">Journeys</span></button>
       <button type="button" data-page="profile" aria-controls="profile"><span class="sr-only">Profile</span></button>
     </nav>
+
+    <dialog class="fullscreen-viewer" id="video-view" aria-label="Deutschland Ticket">
+      <video id="local-video" playsinline muted loop disablepictureinpicture disableremoteplayback aria-label="Selected local video"></video>
+      <button class="back-button" id="back-to-journeys" type="button" aria-label="Back to Journeys">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4-8 8 8 8"/></svg>
+      </button>
+      <p id="video-error" class="feedback video-error" role="alert" hidden></p>
+    </dialog>
+
+    <dialog class="fullscreen-viewer" id="photo-viewer" aria-labelledby="photo-viewer-label">
+      <span class="sr-only" id="photo-viewer-label">Saved profile photo. Swipe right or down to close.</span>
+      <img id="fullscreen-photo" alt="Saved profile photo" draggable="false">
+    </dialog>
 
     <dialog id="video-dialog" aria-labelledby="video-dialog-title">
       <div class="dialog-heading">

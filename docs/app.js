@@ -17,7 +17,6 @@ function showPage(nextPage) {
   activePage = nextPage;
   dock.dataset.active = nextPage;
   screen.scrollTop = scrollPositions.get(nextPage) ?? 0;
-  if (nextPage === 'journeys' && !videoView.hidden) playVideo();
 }
 
 navigation.forEach((button) => {
@@ -33,7 +32,6 @@ const videoDialog = byId('video-dialog');
 const videoInput = byId('video-file');
 const videoPickError = byId('video-pick-error');
 const videoError = byId('video-error');
-const videoList = byId('journeys-list');
 const videoView = byId('video-view');
 const video = byId('local-video');
 const ticket = byId('open-video');
@@ -85,22 +83,17 @@ video.addEventListener('error', () => {
 });
 
 ticket.addEventListener('click', () => {
-  videoList.hidden = true;
-  videoView.hidden = false;
-  screen.scrollTop = 0;
+  videoView.showModal();
   playVideo();
-  byId('back-to-journeys').focus();
 });
 
 byId('back-to-journeys').addEventListener('click', () => {
-  video.pause();
-  videoView.hidden = true;
-  videoList.hidden = false;
-  ticket.focus();
+  videoView.close();
 });
+videoView.addEventListener('close', () => video.pause());
 
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && activePage === 'journeys' && !videoView.hidden) playVideo();
+  if (!document.hidden && videoView.open) playVideo();
 });
 byId('refresh').addEventListener('click', () => {
   byId('refresh-status').textContent = 'Checked this session. No trips exist.';
@@ -110,6 +103,9 @@ const profileDialog = byId('profile-dialog');
 const photoInput = byId('photo-file');
 const pickPhoto = byId('pick-photo');
 const savedPhoto = byId('saved-photo');
+const profileCard = byId('open-profile');
+const photoViewer = byId('photo-viewer');
+const fullscreenPhoto = byId('fullscreen-photo');
 const photoStatus = byId('photo-status');
 const nameForm = byId('name-form');
 const nameInput = byId('name');
@@ -162,8 +158,10 @@ function showPhoto(url) {
   const previousUrl = photoUrl;
   photoUrl = url;
   savedPhoto.src = url;
+  fullscreenPhoto.src = url;
   savedPhoto.hidden = false;
   byId('empty-photo').hidden = true;
+  profileCard.removeAttribute('aria-disabled');
   pickPhoto.querySelector('[data-photo-label]').textContent = 'Replace photo';
   if (previousUrl) URL.revokeObjectURL(previousUrl);
 }
@@ -189,11 +187,53 @@ const initialProfile = readProfile().then(({name, photo}) => {
   if (photo instanceof Blob) showPhoto(URL.createObjectURL(photo));
 }).catch(() => feedback(photoStatus, 'Saved profile details could not be read.'));
 
-byId('open-profile').addEventListener('click', () => {
+byId('edit-profile').addEventListener('click', () => {
   nameInput.value = currentName;
   feedback(nameStatus);
   profileDialog.showModal();
 });
+
+profileCard.addEventListener('click', () => {
+  if (!photoUrl || photoViewer.open) return;
+  if (!history.state?.waylinePhoto) {
+    history.pushState({...history.state, waylinePhoto: true}, '');
+  }
+  photoViewer.showModal();
+});
+
+function closePhotoViewer() {
+  photoViewer.close();
+  if (history.state?.waylinePhoto) history.back();
+}
+
+photoViewer.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closePhotoViewer();
+});
+window.addEventListener('popstate', () => {
+  if (history.state?.waylinePhoto) {
+    if (photoUrl && !photoViewer.open) photoViewer.showModal();
+  } else if (photoViewer.open) {
+    photoViewer.close();
+  }
+});
+
+let photoSwipeStart;
+photoViewer.addEventListener('pointerdown', (event) => {
+  if (!event.isPrimary || event.button !== 0) return;
+  photoSwipeStart = {id: event.pointerId, x: event.clientX, y: event.clientY};
+  photoViewer.setPointerCapture(event.pointerId);
+});
+photoViewer.addEventListener('pointerup', (event) => {
+  if (photoSwipeStart?.id !== event.pointerId) return;
+  const dx = event.clientX - photoSwipeStart.x;
+  const dy = event.clientY - photoSwipeStart.y;
+  photoSwipeStart = undefined;
+  if ((dx > 55 && dx > Math.abs(dy)) || (dy > 65 && dy > Math.abs(dx))) {
+    closePhotoViewer();
+  }
+});
+photoViewer.addEventListener('pointercancel', () => { photoSwipeStart = undefined; });
 
 pickPhoto.addEventListener('click', () => photoInput.click());
 photoInput.addEventListener('change', async () => {
