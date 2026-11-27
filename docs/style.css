@@ -50,7 +50,10 @@ h1, h2, p { margin: 0; }
   padding-bottom: calc(270 * var(--unit) + env(safe-area-inset-bottom));
 }
 .screen::-webkit-scrollbar { display: none; }
-.screen:has(#booking:not([hidden])) { background: linear-gradient(#2a2c38 0 2px, var(--background) 2px); }
+.screen:has(#booking:not([hidden])) {
+  background: linear-gradient(#2a2c38 0 env(safe-area-inset-top), var(--background) env(safe-area-inset-top));
+}
+#booking { padding-bottom: calc(165 * var(--unit)); }
 
 .reference { position: relative; }
 .reference-image { display: block; width: 100%; height: auto; }

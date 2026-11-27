@@ -2,7 +2,8 @@
 
 const scope = self.registration.scope;
 const cachePrefix = 'wayline:' + scope + ':';
-const cacheName = cachePrefix + '3';
+const build = '4';
+const cacheName = cachePrefix + build;
 const appFiles = [
   './index.html',
   './style.css',
@@ -23,9 +24,17 @@ const appFiles = [
 const appShell = appFiles[0];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(cacheName).then((cache) => {
-    return cache.addAll(appFiles.map((url) => new Request(url, {cache: 'reload'})));
-  }).then(() => self.skipWaiting()));
+  event.waitUntil((async () => {
+    const cache = await caches.open(cacheName);
+    await Promise.all(appFiles.map(async (url) => {
+      const versionedUrl = new URL(url);
+      versionedUrl.searchParams.set('v', build);
+      const response = await fetch(versionedUrl, {cache: 'reload'});
+      if (!response.ok) throw new Error('Could not download ' + versionedUrl.pathname);
+      await cache.put(url, response);
+    }));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', (event) => {
