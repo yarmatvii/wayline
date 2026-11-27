@@ -31,19 +31,44 @@ function feedback(element, message = '') {
 const videoDialog = byId('video-dialog');
 const videoInput = byId('video-file');
 const videoPickError = byId('video-pick-error');
+const ticketPhotoInput = byId('ticket-photo-file');
+const pickTicketPhoto = byId('pick-ticket-photo');
+const ticketPhotoStatus = byId('ticket-photo-status');
 const videoError = byId('video-error');
 const videoView = byId('video-view');
+const ticketMedia = byId('ticket-media');
 const video = byId('local-video');
 const ticket = byId('open-video');
 const ticketEntry = byId('journeys-ticket');
+const ticketPhotoImage = byId('ticket-photo');
 let videoUrl;
 let videoFailed = false;
+let ticketPhotoUrl;
+
+function updateTicketEntry() {
+  const hasMedia = Boolean(videoUrl || ticketPhotoUrl);
+  byId('journeys-empty').hidden = hasMedia;
+  ticketEntry.hidden = !hasMedia;
+  ticketMedia.hidden = !videoUrl;
+}
+
+function showTicketPhoto(url) {
+  const previousUrl = ticketPhotoUrl;
+  ticketPhotoUrl = url;
+  ticketPhotoImage.src = url;
+  ticketPhotoImage.hidden = false;
+  byId('ticket-photo-label').textContent = 'Replace ticket photo';
+  updateTicketEntry();
+  if (previousUrl) URL.revokeObjectURL(previousUrl);
+}
 
 byId('add-video').addEventListener('click', () => {
   feedback(videoPickError);
+  feedback(ticketPhotoStatus);
   videoDialog.showModal();
 });
 byId('pick-video').addEventListener('click', () => videoInput.click());
+pickTicketPhoto.addEventListener('click', () => ticketPhotoInput.click());
 
 videoInput.addEventListener('change', () => {
   const file = videoInput.files[0];
@@ -60,8 +85,7 @@ videoInput.addEventListener('change', () => {
   video.src = videoUrl;
   if (previousUrl) URL.revokeObjectURL(previousUrl);
   feedback(videoError);
-  byId('journeys-empty').hidden = true;
-  ticketEntry.hidden = false;
+  updateTicketEntry();
   videoDialog.close();
   ticket.focus();
 });
@@ -139,7 +163,7 @@ function openDatabase() {
   return databasePromise;
 }
 
-async function storeProfileValue(key, value) {
+async function storeLocalValue(key, value) {
   const database = await openDatabase();
   await new Promise((resolve, reject) => {
     const transaction = database.transaction('profile', 'readwrite');
@@ -168,26 +192,67 @@ function showPhoto(url) {
   if (previousUrl) URL.revokeObjectURL(previousUrl);
 }
 
-async function readProfile() {
+async function readLocalValues() {
   const database = await openDatabase();
   return new Promise((resolve, reject) => {
     const transaction = database.transaction('profile', 'readonly');
     const store = transaction.objectStore('profile');
     const name = store.get('name');
     const photo = store.get('photo');
-    transaction.oncomplete = () => resolve({name: name.result, photo: photo.result});
+    const ticketPhoto = store.get('ticketPhoto');
+    transaction.oncomplete = () => resolve({name: name.result, photo: photo.result, ticketPhoto: ticketPhoto.result});
     transaction.onabort = () => reject(transaction.error);
   });
 }
 
-const initialProfile = readProfile().then(({name, photo}) => {
+const initialData = readLocalValues().then(({name, photo, ticketPhoto}) => {
   if (typeof name === 'string') {
     const typedName = profileDialog.open && nameInput.value;
     showName(name);
     if (typedName) nameInput.value = typedName;
   }
   if (photo instanceof Blob) showPhoto(URL.createObjectURL(photo));
+  if (ticketPhoto instanceof Blob) showTicketPhoto(URL.createObjectURL(ticketPhoto));
 }).catch(() => feedback(photoStatus, 'Saved profile details could not be read.'));
+
+async function decodePhoto(file) {
+  const url = URL.createObjectURL(file);
+  const image = new Image();
+  image.src = url;
+  try {
+    await image.decode();
+    return url;
+  } catch (error) {
+    URL.revokeObjectURL(url);
+    throw error;
+  }
+}
+
+ticketPhotoInput.addEventListener('change', async () => {
+  const file = ticketPhotoInput.files[0];
+  ticketPhotoInput.value = '';
+  if (!file) return;
+
+  pickTicketPhoto.disabled = true;
+  feedback(ticketPhotoStatus);
+  let candidateUrl;
+  try {
+    candidateUrl = await decodePhoto(file);
+    await initialData;
+    await storeLocalValue('ticketPhoto', file);
+    showTicketPhoto(candidateUrl);
+    feedback(ticketPhotoStatus, 'Ticket photo saved on this device.');
+  } catch {
+    if (candidateUrl) {
+      URL.revokeObjectURL(candidateUrl);
+      feedback(ticketPhotoStatus, 'Could not save this photo on the device.');
+    } else {
+      feedback(ticketPhotoStatus, 'This photo could not be opened. Try a JPEG or PNG.');
+    }
+  } finally {
+    pickTicketPhoto.disabled = false;
+  }
+});
 
 byId('edit-profile').addEventListener('click', () => {
   nameInput.value = currentName;
@@ -245,21 +310,18 @@ photoInput.addEventListener('change', async () => {
 
   pickPhoto.disabled = true;
   feedback(photoStatus);
-  const candidateUrl = URL.createObjectURL(file);
+  let candidateUrl;
   try {
-    const candidate = new Image();
-    candidate.src = candidateUrl;
-    await candidate.decode();
+    candidateUrl = await decodePhoto(file);
   } catch {
     feedback(photoStatus, 'This photo could not be opened. Try a JPEG, PNG, or another photo.');
-    URL.revokeObjectURL(candidateUrl);
     pickPhoto.disabled = false;
     return;
   }
 
   try {
-    await initialProfile;
-    await storeProfileValue('photo', file);
+    await initialData;
+    await storeLocalValue('photo', file);
     showPhoto(candidateUrl);
     feedback(photoStatus, 'Photo saved on this device.');
   } catch {
@@ -282,8 +344,8 @@ nameForm.addEventListener('submit', async (event) => {
   saveButton.disabled = true;
   nameInput.readOnly = true;
   try {
-    await initialProfile;
-    await storeProfileValue('name', name);
+    await initialData;
+    await storeLocalValue('name', name);
     showName(name);
     feedback(nameStatus, 'Name saved on this device.');
   } catch {

@@ -96,10 +96,11 @@
         <h2 class="sr-only" id="ticket-view-title">Subscription</h2>
         <button class="reference-hit ticket-back" id="back-to-journeys" type="button" aria-label="Back to Journeys"></button>
       </header>
-      <div class="ticket-media">
+      <div class="ticket-media" id="ticket-media" hidden>
         <video id="local-video" playsinline muted loop disablepictureinpicture disableremoteplayback aria-label="Selected local video"></video>
         <p id="video-error" class="feedback video-error" role="alert" hidden></p>
       </div>
+      <img id="ticket-photo" class="ticket-uploaded-photo" alt="Saved ticket photo" hidden>
       <section class="ticket-details" lang="de" aria-labelledby="ticket-conditions-title">
         <div class="sr-only">
           <h3 id="ticket-conditions-title">Konditionen</h3>
@@ -137,13 +138,18 @@
 
     <dialog id="video-dialog" aria-labelledby="video-dialog-title">
       <div class="dialog-heading">
-        <h2 id="video-dialog-title">Add a local video</h2>
+        <h2 id="video-dialog-title">Add ticket media</h2>
         <form method="dialog"><button class="icon-button" type="submit" aria-label="Close">×</button></form>
       </div>
-      <p class="dialog-copy">Select a video from Photos or Files.</p>
-      <button class="button" id="pick-video" type="button"><span aria-hidden="true">+</span> Choose video</button>
+      <p class="dialog-copy">Choose a video or photo from Photos or Files.</p>
+      <div class="ticket-pickers">
+        <button class="button" id="pick-video" type="button"><span aria-hidden="true">+</span> Choose video</button>
+        <button class="button" id="pick-ticket-photo" type="button"><span aria-hidden="true">+</span> <span id="ticket-photo-label">Add ticket photo</span></button>
+      </div>
       <input id="video-file" type="file" accept="video/*,.mov,.mp4,.m4v" hidden>
+      <input id="ticket-photo-file" type="file" accept="image/*" hidden>
       <p id="video-pick-error" class="feedback" role="alert" hidden></p>
+      <p id="ticket-photo-status" class="feedback" role="status" hidden></p>
     </dialog>
 
     <dialog id="profile-dialog" aria-labelledby="profile-dialog-title">

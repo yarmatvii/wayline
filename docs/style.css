@@ -288,6 +288,12 @@ dialog::backdrop { background: #090a10c7; }
   place-items: center;
   background: #000;
 }
+.ticket-uploaded-photo { display: block; width: 100%; height: auto; }
+.ticket-media:has(+ .ticket-uploaded-photo:not([hidden])) {
+  display: block;
+  height: auto;
+}
+.ticket-media:has(+ .ticket-uploaded-photo:not([hidden])) #local-video { height: auto; }
 .ticket-details { position: relative; }
 .ticket-document-details {
   padding: 0 calc(63 * var(--ticket-unit)) calc(32 * var(--ticket-unit));
@@ -353,6 +359,7 @@ dialog::backdrop { background: #090a10c7; }
 .dialog-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
 .dialog-heading h2 { font-size: 20px; }
 .dialog-copy { margin-bottom: 16px; color: var(--muted); line-height: 1.4; }
+.ticket-pickers { display: flex; flex-wrap: wrap; gap: 8px; }
 .button, .icon-button {
   min-height: 44px;
   border: 1px solid var(--line);
