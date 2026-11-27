@@ -2,13 +2,21 @@
 
 const scope = self.registration.scope;
 const cachePrefix = 'wayline:' + scope + ':';
-const cacheName = cachePrefix + '1';
+const cacheName = cachePrefix + '2';
 const appFiles = [
   './index.html',
   './style.css',
   './app.js',
   './manifest.webmanifest',
-  './countryside.jpg',
+  './booking-form.png',
+  './booking-details.png',
+  './journeys-header.png',
+  './journeys-empty.png',
+  './journeys-previous.png',
+  './profile-reference.png',
+  './dock-booking.png',
+  './dock-journeys.png',
+  './dock-profile.png',
   './icon-192.png',
   './icon-512.png',
 ].map((file) => new URL(file, scope).href);

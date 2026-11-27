@@ -1,19 +1,22 @@
 'use strict';
 
 const byId = (id) => document.getElementById(id);
-const navigation = [...document.querySelectorAll('.dock [data-page]')];
+const screen = byId('main');
+const dock = document.querySelector('.dock');
+const navigation = [...dock.querySelectorAll('[data-page]')];
 const scrollPositions = new Map();
 let activePage = 'booking';
 
 function showPage(nextPage) {
   if (nextPage === activePage) return;
-  scrollPositions.set(activePage, window.scrollY);
+  scrollPositions.set(activePage, screen.scrollTop);
   byId(activePage).hidden = true;
   byId(nextPage).hidden = false;
   navigation.find((button) => button.dataset.page === activePage).removeAttribute('aria-current');
   navigation.find((button) => button.dataset.page === nextPage).setAttribute('aria-current', 'page');
   activePage = nextPage;
-  window.scrollTo(0, scrollPositions.get(nextPage) ?? 0);
+  dock.dataset.active = nextPage;
+  screen.scrollTop = scrollPositions.get(nextPage) ?? 0;
   if (nextPage === 'journeys' && !videoView.hidden) playVideo();
 }
 
@@ -84,7 +87,7 @@ video.addEventListener('error', () => {
 ticket.addEventListener('click', () => {
   videoList.hidden = true;
   videoView.hidden = false;
-  window.scrollTo(0, 0);
+  screen.scrollTop = 0;
   playVideo();
   byId('back-to-journeys').focus();
 });
@@ -111,6 +114,8 @@ const photoStatus = byId('photo-status');
 const nameForm = byId('name-form');
 const nameInput = byId('name');
 const nameStatus = byId('name-status');
+const displayName = byId('display-name');
+const defaultName = displayName.textContent;
 let databasePromise;
 let currentName = '';
 let photoUrl;
@@ -149,7 +154,7 @@ async function storeProfileValue(key, value) {
 
 function showName(name) {
   currentName = name;
-  byId('display-name').textContent = name || 'Your name';
+  displayName.textContent = name || defaultName;
   nameInput.value = name;
 }
 
@@ -159,7 +164,7 @@ function showPhoto(url) {
   savedPhoto.src = url;
   savedPhoto.hidden = false;
   byId('empty-photo').hidden = true;
-  pickPhoto.querySelector('span').textContent = 'Replace photo';
+  pickPhoto.querySelector('[data-photo-label]').textContent = 'Replace photo';
   if (previousUrl) URL.revokeObjectURL(previousUrl);
 }
 
